@@ -1,5 +1,6 @@
 
 import sys, os
+import re
 import py
 
 from jirpa import JiraProxy, JiraProxyError
@@ -8,7 +9,7 @@ from jirpa import JiraProxy, JiraProxyError
 
 from helper_pak import BasicLogger, excErrorMessage
 
-from jira_targets import GOOD_VANILLA_SERVER_CONFIG, 
+from jira_targets import GOOD_VANILLA_SERVER_CONFIG
 from jira_targets import PROJECT_KEY_5 as AGL_PROJECT
 
 ###############################################################################################

@@ -47,7 +47,7 @@ def test_create_bug_with_single_affects_version_value():
                 }
     issue_key = jp.createIssue(PROJECT_KEY, 'Bug', item_data)
     issue = jp.getIssue(issue_key)
-    assert issue['Affects Version/s'] == 'orange'
+    assert issue['Affects Version/s'] == ['orange']
 
 def test_create_bug_with_multiple_affects_version_values():
     """
@@ -59,6 +59,6 @@ def test_create_bug_with_multiple_affects_version_values():
                 }
     issue_key = jp.createIssue(PROJECT_KEY, 'Bug', item_data)
     issue = jp.getIssue(issue_key)
-    assert issue['Affects Version/s'].split(",").sorted  == 'apple,lime'.split(",").sorted
+    assert issue['Affects Version/s']  == ['apple', 'lime']
 
 

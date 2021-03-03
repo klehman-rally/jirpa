@@ -9,7 +9,7 @@ from jirpa import JiraProxy, JiraProxyError
 
 ###############################################################################################
 
-from helper       import BasicLogger, excErrorMessage
+from helper_pak   import BasicLogger, excErrorMessage
 
 from jira_targets import GOOD_VANILLA_SERVER_CONFIG, GOOD_VANILLA_ONDEMAND_CONFIG
 from jira_targets import INCOMPLETE_CONFIG 

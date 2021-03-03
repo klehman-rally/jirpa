@@ -483,13 +483,13 @@ class JiraProxy:
         jql_query = jql_query.replace(r'Remaining Estimate', "remainingEstimate")
 
         #
-        # Fix for DE17360  - ampersand char (&) and plus symbol (+) must be urlencoded
+        # Fix for DE17360  - ampersand char (&) and plus symbol (+) must be urlencoded as unicode code point value
         #
-        jql_query = jql_query.replace(r'&', '%26')
-        jql_query = jql_query.replace(r'+', '%2B')
-        jql_query = jql_query.replace(r'%', '%25')
-        jql_query = jql_query.replace(r'?', '%3F')
-        jql_query = jql_query.replace(r'@', '%40')
+        jql_query = jql_query.replace(r'&', '\\u0026')
+        jql_query = jql_query.replace(r'+', '\\u002B')
+        jql_query = jql_query.replace(r'%', '\\u0025')
+        jql_query = jql_query.replace(r'?', '\\u003F')
+        jql_query = jql_query.replace(r'@', '\\u0040')
 
         self.logger.debug(f"Updated jql: {jql_query}")
 
