@@ -42,6 +42,36 @@ class JiraAttachmentMeta:
 
 #######################################################################################
 
+class JiraAgileBoard:
+    """
+        Given information for a specific Agile Board
+        record the attribute/value in instance attributes here
+    """
+    def __init__(self, info):
+        self.id   = info['id']
+        self.name = info['name']
+        self.type = info['type']
+        self.url  = info['self']
+
+#######################################################################################
+
+class JiraAgileSprint:
+    """
+        Given information for a specific Agile Sprint
+        record the attribute/value in instance attributes here
+    """
+    def __init__(self, info):
+        self.id    = info['id']
+        self.name  = info['name']
+        self.state = info['state']
+        self.start_date      = info.get('startDate', None)
+        self.end_date        = info.get('endDate', None)
+        self.complete_date   = info.get('completeDate', None)
+        self.origin_board_id = info.get('originBoardId', None)
+        self.url = info['self']
+
+#######################################################################################
+
 class JiraFieldSchema:
     """
         Given information for a specific field

@@ -17,22 +17,22 @@ from jira_targets import PROJECT_KEY_5 as AGL_PROJECT
 issue_key_patt = re.compile(f'^{AGL_PROJECT}-\\d+')
 
 
-#def test_create_jira_issue_with_valid_sprint_id():
-#    """
-#       create a JIRA issue with a valid Sprint field id
-#    """
-#    jp = JiraProxy(GOOD_VANILLA_SERVER_CONFIG)
-#
-#    work_item = {"Summary"  : "Usain Bolt does not slow down for anything",
-#                 "Reporter" : "testuser",
-#                 "Assignee" : "devuser",
-#                 "Sprint"   : 1   # 1 is the ID for the Sprint value of "AGL Sprint 1"
-#                }
-#
-#    issue_key = jp.createIssue(AGL_PROJECT, "Story", work_item)
-#    assert issue_key_patt.match(issue_key)
-#    story = jp.getIssue(issue_key)
-#    assert story.Sprint == '1'
+def test_create_jira_issue_with_valid_sprint_id():
+    """
+       create a JIRA issue with a valid Sprint field id
+    """
+    jp = JiraProxy(GOOD_VANILLA_SERVER_CONFIG)
+
+    work_item = {"Summary"  : "Usain Bolt does not slow down for anything",
+                 "Reporter" : "testuser",
+                 "Assignee" : "devuser",
+                 "Sprint"   : 1   # 1 is the ID for the Sprint value of "AGL Sprint 1"
+                }
+
+    issue_key = jp.createIssue(AGL_PROJECT, "Story", work_item)
+    assert issue_key_patt.match(issue_key)
+    story = jp.getIssue(issue_key)
+    assert story.Sprint == '1'
 #    jp.deleteIssue(issue_key)
 
 #

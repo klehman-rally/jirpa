@@ -9,6 +9,7 @@ import traceback
 from .mutelogger import MuteLogger
 from .jiracomm   import JiraComm
 from .entities   import JiraServerInfo, JiraUser, JiraFieldSchema, JiraAttachmentMeta
+from .entities   import JiraAgileBoard, JiraAgileSprint
 from .jiraissue  import JiraIssue
 
 ##################################################################################################
@@ -759,6 +760,38 @@ class JiraProxy:
             raise JiraProxyError(f'Could not find project for identifier: {project_identifier}')
         project_key = result[0][0]
         return project_key
+
+    def getAgileBoards(self, project_identifier=None):
+        """
+            option = {projectKeyOrId : project_identifier}
+            self.jira_comm.getRequest(endpoint, **option)
+        """
+        endpoint = self.jira_comm.url + '/rest/agile/1.0/board'
+        option = {'verbatim_url' : True}
+        if project_identifier:
+            option['projectKeyOrId'] = project_identifier
+        status, response, errors = self.jira_comm.getRequest(endpoint, **option)
+        # potentially look at 'maxResults', 'startAt', 'isLast' to see if more pages have to be retrieved...
+        boards = [JiraAgileBoard(info) for info in response['values']]
+        return boards
+
+    def getAgileSprints(self, project_identifier, target_board):
+        """
+            Get the specific board ident given the project and the board name,
+            then hit the endpoint /rest/agile/1.0/board/{boardId}/sprint to retrieve
+            the sprints.
+        """
+        boards = self.getAgileBoards(project_identifier)
+        hits = [board.id for board in boards if board.name == target_board ]
+        if not hits:
+            return []
+        boardId = hits[0]
+
+        endpoint = self.jira_comm.url + f'/rest/agile/1.0/board/{boardId}/sprint'
+        option = {'verbatim_url' : True}
+        status, response, errors = self.jira_comm.getRequest(endpoint, **option)
+        sprints = [JiraAgileSprint(info) for info in response['values']]
+        return sprints
 
     def ensureMetaInformationSupport(self, project_key, issue_type):
         if project_key not in self.standard_fields:

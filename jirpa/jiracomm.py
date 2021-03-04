@@ -40,13 +40,13 @@ class JiraComm:
                 warning = "Proxy user has been configured, but Proxy URL has not been configured"
                 log.warn(warning)
         else:
-            log.info(f"jirpa JiraComm using proxy: |{self.proxy_url}|")
+            log.info(f'jirpa JiraComm using proxy: |{self.proxy_url}|')
             target_protocol = self.url.split(':', 1)[0]
             self.proxies = {target_protocol : self.proxy_url}
             if not self.proxy_user:
                 log.info("No credentials for proxy server configured")
             else:
-                log.info(f"jirpa JiraComm proxy user: |{self.proxy_user}|")
+                log.info(f'jirpa JiraComm proxy user: |{self.proxy_user}|')
                 if not self.proxy_password:
                     log.info("Proxy password has NOT been configured")
                 else:
@@ -57,8 +57,8 @@ class JiraComm:
         options = {'username' : self.user, 'password' : self.password}
         if re.search(r'\.atlassian\.net', self.url, re.IGNORECASE):
             if self.accountId is None or not self.accountId:
-                problem = (f"Jira OnDemand REST API requires the use "
-                           f"of the accountId of the target user")
+                problem = (f'Jira OnDemand REST API requires the use '
+                           f'of the accountId of the target user')
                 raise JiraCommError(problem)
             self.on_demand = True
             options = {'accountId' : self.accountId}
@@ -68,41 +68,36 @@ class JiraComm:
         self.result = result
         self.errors = errors
         if status != 200:
-            #print(f"Initial connection status code: {status}  errors: {errors}")
-            raise JiraCommError(f"Unable to connect to {self.url}")
+            raise JiraCommError(f'Unable to connect to {self.url}')
 
 
     def executeRequest(self, method, target, payload=None, extra_headers=None, **option):
         """
-        """
-        if option.get('verbatim_url', False):
-            endpoint = target
-            del option['verbatim_url'] # so this doesn't get appened as query string arg
-        else:
-            endpoint = f"{self.jira_url_prefix}/{target}"
-        self.logger.debug(f"issuing a {method.upper()} request for endpoint: {endpoint}")
+            the following have to be used in the executeRequest upon calling
+             self.conn.request(get|put|post|delete, endpoint)
 
-        if option:
-            kv_pairs = [requote_uri(f"{key}={value}") for key,value in option.items()]
-            query_string = "&".join(kv_pairs)
-            #print(f"query_string: {query_string}")
-            endpoint += f"?{query_string}"
-        #print(f"executeRequest on endpoint: {endpoint}")
-        #if payload: payload = json.dumps(payload)  # (*maybe don't need to do this since requests.post
-        #                                        # takes the dict directly as the data keyword arg...
-        """
-          the following have to be used in the executeRequest upon calling
-          self.conn.<operation> (get, put, post, delete)
-
-          url encoded    -  taken care of with the requote_uri above for the query_string
-          timeout - not subdivided by the following  (but would be in **option parameter dict)
-          verify  parm is from self.verify_cert (False by default, can be set from init config)
-          proxies parm is from self.proxies (None by default, has value according to self.proxy_url)
-              {'http'  : 'foo.bar:3128', 
+            url encoding  -  taken care of with the requote_uri for items in the query_string
+            timeout - in seconds
+            verify  parm is from self.verify_cert (False by default, can be set from init config)
+            proxies parm is from self.proxies (None by default, has value according to self.proxy_url)
+              {'http'  : 'foo.bar:3128',
                'https' : 'gatorious.atlassian.net:3128',
                'http://host.name': 'foo.bar:4012'
               }
         """
+        if option.get('verbatim_url', False):
+            endpoint = target
+            del option['verbatim_url'] # so this doesn't get appended as query string arg
+        else:
+            endpoint = f'{self.jira_url_prefix}/{target}'
+        self.logger.debug(f'issuing a {method.upper()} request for endpoint: {endpoint}')
+
+        if option:
+            kv_pairs = [requote_uri(f'{key}={value}') for key,value in option.items()]
+            query_string = "&".join(kv_pairs)
+            #print(f'query_string: {query_string}')
+            endpoint += f'?{query_string}'
+
         if not extra_headers:
             extra_headers = {}
         if 'Content-Type' not in extra_headers:
@@ -144,6 +139,7 @@ class JiraComm:
     
     def parseResponse(self, endpoint, response):
         """
+            Attempt to pull the JSON out of the response and get it in to a Python dict representation
         """
         result, errors = response, None
         if response.content:
@@ -152,9 +148,9 @@ class JiraComm:
             except Exception as exc:
                 pass
         if not 200 <= response.status_code <= 299:
-            errors = f"Response code for {endpoint} was {response.status_code} "
+            errors = f'Response code for {endpoint} was {response.status_code} '
         if response.status_code == 401:
-            errors = f"Response code for {endpoint} was 401 (Unauthorized) "
+            errors = f'Response code for {endpoint} was 401 (Unauthorized) '
         if result and 'errorMessages' in result:
             errors = "\n".join(result['errorMessages'])
             if 'errors' in result:
@@ -175,7 +171,6 @@ class JiraComm:
                                       extra_headers=extra_headers, 
                                       **options)
 
-        
         if status == 302:
             redirect_url = response.headers['location']
             status, response, errors \
@@ -185,13 +180,13 @@ class JiraComm:
 
         errors = None
         if not 200 <= status <= 299:
-            errors = f"Response code for {att_content_url} was {status} "
+            errors = f'Response code for {att_content_url} was {status} '
 
         if status == 401:
-            errors = f"Response code for {att_content_url} was 401 (Unauthorized) "
+            errors = f'Response code for {att_content_url} was 401 (Unauthorized) '
 
         if status == 404:
-            errors = f"Response code for {att_content_url} was 404 (Not Found) "
+            errors = f'Response code for {att_content_url} was 404 (Not Found) '
 
         if response.content:
             attachment_content = response.content
@@ -214,9 +209,9 @@ class JiraComm:
         boundary = binascii.hexlify(os.urandom(16)).decode('ascii')
         separator = "\r\n"   #CRLF used as separator for elements in multipart/form-data
         # multipart/form-data consists of:
-        # prefix
-        # file contents
-        # suffix
+        #     prefix
+        #     file contents
+        #     suffix
         prefix =  f'--{boundary}{separator}'
         prefix += f'Content-Disposition: form-data; name="file"; filename="{file_base_name}"{separator}'
         prefix += f'Content-Type: application/octet-stream{separator}{separator}'
